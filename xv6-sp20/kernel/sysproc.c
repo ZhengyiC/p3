@@ -5,6 +5,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "sysfunc.h"
+#include "vm.c"
 
 int
 sys_fork(void)
@@ -60,7 +61,7 @@ sys_sleep(void)
 {
   int n;
   uint ticks0;
-  
+
   if(argint(0, &n) < 0)
     return -1;
   acquire(&tickslock);
@@ -82,9 +83,18 @@ int
 sys_uptime(void)
 {
   uint xticks;
-  
+
   acquire(&tickslock);
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+int sys_mprotect(void)
+{
+  void *addr;
+  int len;
+  if(argptr(0, &addr, 1)< 0 || argint(1, &len) < 0)
+    return -1;
+  return mprotect(addr, len);
 }
