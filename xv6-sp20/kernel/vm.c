@@ -117,6 +117,34 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
   return 0;
 }
 
+//This function set a region starting from addr with len length to both readable and writable
+//Return 0 upon success, else return -1
+int munprotect(void *addr, int len){
+    if(addr != PGROUNDUP(addr) || len<1 || addr> USERTOP || addr<0){
+        return -1; //not align
+    }
+
+    if((addr+ PGSIZE*len)> USERTOP){
+        return -1; //go beyond bound
+    }
+
+    pde_t * curr_pgdir = proc->pgdir;
+    pte_t* pte;
+    for(int i = 0; i< len ; i++){
+         pte = walkpgdir(curr_pgdir, addr+ i*PGSIZE, 0);
+         if(pte == 0){
+             return -1; //not present
+         }
+         *pte= *pte | PTE_W;
+
+    }
+
+
+
+    return 0;
+
+}
+
 // The mappings from logical to linear are one to one (i.e.,
 // segmentation doesn't do anything).
 // There is one page table per process, plus one that's used
