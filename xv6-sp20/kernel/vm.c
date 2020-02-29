@@ -79,16 +79,12 @@ int mprotect(void *addr, int len)
     char *a;
     a = PGROUNDDOWN(addr);
     if(a != addr) return -1;
-
+    //if(*a & PTE_P) return -1;
     if(len <= 0) return -1;
     for(int i = 0; i < len; i++) {
-        pte = walkpgdir(proc->pgdir, a, 0)
+        pte = walkpgdir(proc->pgdir, a, 1);
         if(pte == 0) return -1;
         if(*pte & PTE_P) return -1;
-        a += PGSIZE;
-    }
-    for(int i = 0; i < len; i++) {
-        pte = walkpgdir(proc->pgdir, a, 0)
         *pte = *pte & ~PTE_W;
         a += PGSIZE;
     }
@@ -124,11 +120,11 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
 //This function set a region starting from addr with len length to both readable and writable
 //Return 0 upon success, else return -1
 int munprotect(void *addr, int len){
-    if(addr != (char*) PGROUNDUP(addr) || len<1 || addr<0){
+    if(addr != PGROUNDUP(addr) || len<1 || addr<0){
         return -1; //not align
     }
 
-    if((&addr+ PGSIZE*len)> USERTOP || &addr > USERTOP){
+    if((*addr+ PGSIZE*len)> USERTOP || *addr > USERTOP){
         return -1; //go beyond bound
     }
 
