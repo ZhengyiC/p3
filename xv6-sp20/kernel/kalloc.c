@@ -40,7 +40,7 @@ kfree(char *v)
 {
   struct run *r;
 
-  if((uint)v % PGSIZE || v < end || (uint)v >= PHYSTOP) 
+  if((uint)v % PGSIZE || v < end || (uint)v >= PHYSTOP)
     panic("kfree");
 
   // Fill with junk to catch dangling refs.
@@ -65,7 +65,8 @@ kalloc(void)
   r = kmem.freelist;
   if(r)
     kmem.freelist = r->next;
+  if(kmem.freelist)
+    kmem.freelist = kmem.freelist->next;
   release(&kmem.lock);
   return (char*)r;
 }
-
