@@ -71,6 +71,26 @@ walkpgdir(pde_t *pgdir, const void *va, int create)
   return &pgtab[PTX(va)];
 }
 
+// change the protection bits of the page range starting at addr and of len
+// to be read only.
+int mprotect(void *addr, int len)
+{
+    pte_t *pte;
+    char *a;
+    a = PGROUNDDOWN(addr);
+    if(a != addr) return -1;
+    if(*a & PTE_P) return -1;
+    if(len <= 0) return -1;
+    for(int i = 0; i < len; i++) {
+        pte = walkpgdir(proc->pgdir, a, 1)
+        if(pte == 0) return -1;
+        if(*pte & PTE_P) return -1;
+        *pte = *pte & ~PTE_W
+        a += PGSIZE
+    }
+    return 0;
+}
+
 // Create PTEs for linear addresses starting at la that refer to
 // physical addresses starting at pa. la and size might not
 // be page-aligned.

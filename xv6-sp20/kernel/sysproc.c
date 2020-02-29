@@ -5,6 +5,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "sysfunc.h"
+#include "vm.c"
 
 int
 sys_fork(void)
@@ -90,10 +91,20 @@ sys_uptime(void)
 }
 
 
+
 int sys_munprotect(void){
     int len;
     void* addr;
     if(argint(0, &len)<0){return -1;}
     if(argptr(0 , &addr, sizeof(addr))<0){return -1;}
+
+
+int sys_mprotect(void)
+{
+  void *addr;
+  int len;
+  if(argptr(0, &addr, 1)< 0 || argint(1, &len) < 0)
+    return -1;
+  return mprotect(addr, len);
 
 }

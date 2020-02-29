@@ -24,7 +24,7 @@
 #define SYS_sleep  20
 #define SYS_uptime 21
 #define SYS_mprotect 22
-#definr SYS_munprotect 23
+#define SYS_munprotect 23
 
 
 #endif // _SYSCALL_H_
