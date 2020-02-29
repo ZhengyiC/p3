@@ -7,6 +7,7 @@
 #include "syscall.h"
 #include "sysfunc.h"
 
+
 // User code makes a system call with INT T_SYSCALL.
 // System call number in %eax.
 // Arguments on the stack, from the user call to the C
@@ -104,7 +105,7 @@ static int (*syscalls[])(void) = {
 [SYS_write]   sys_write,
 [SYS_uptime]  sys_uptime,
 [SYS_mprotect] sys_mprotect,
-[SYS_munprotect] sys_unprotect,
+[SYS_munprotect] sys_munprotect,
 };
 
 // Called on a syscall trap. Checks that the syscall number (passed via eax)
