@@ -104,12 +104,20 @@ int munprotect(void *addr, int len){
         return -1; //not align
     }
 
-    pde_t * curr_pgdir = proc->pgdir;
-    pte_t* pte = walkpgdir(curr_pgdir, addr, 0);
-    if(pte == 0){
-        return -1; //not present
+    if((addr+ PGSIZE*len)> USERTOP){
+        return -1; //go beyond bound
     }
-    *pte= *pte | PTE_W;
+
+    pde_t * curr_pgdir = proc->pgdir;
+    pte_t* pte;
+    for(int i = 0; i< len ; i++){
+         pte = walkpgdir(curr_pgdir, addr+ i*PGSIZE, 0);
+         if(pte == 0){
+             return -1; //not present
+         }
+         *pte= *pte | PTE_W;
+
+    }
 
 
 
