@@ -81,11 +81,12 @@ int mprotect(void *addr, int len)
     if(a != addr) return -1;
     if(len <= 0) return -1;
     for(int i = 0; i < len; i++) {
-        pte = walkpgdir(proc->pgdir, a, 1);
+        pte = walkpgdir(proc->pgdir, a, 0);
         if(pte == 0) return -1;
         if(!(*pte & PTE_P)) return -1;
         a += PGSIZE;
     }
+    a = PGROUNDDOWN(addr);
     for(int i = 0; i < len; i++) {
         pte = walkpgdir(proc->pgdir, a, 0);
         *pte = *pte & ~PTE_W;
@@ -133,20 +134,16 @@ int munprotect(void *addr, int len){
         return -1; //go beyond bound
     }
 
-    pde_t * curr_pgdir = proc->pgdir;
-    pte_t* pte;
+    pde_t *curr_pgdir = proc->pgdir;
+    pte_t *pte;
     for(int i = 0; i< len ; i++){
-         pte = walkpgdir(curr_pgdir, addr+ i*PGSIZE, 0);
+         pte = walkpgdir(curr_pgdir, addr + i*PGSIZE, 0);
          if(pte == 0){
              return -1; //not present
          }
-         *pte= *pte | PTE_W;
-
+         *pte = *pte | PTE_P | PTE_W | PTE_U;
+         lcr3(PADDR(proc->pgdir));
     }
-    lcr3(PADDR(proc->pgdir));
-
-
-
     return 0;
 
 }
@@ -369,7 +366,7 @@ copyuvm(pde_t *pgdir, uint sz)
     if((mem = kalloc()) == 0)
       goto bad;
     memmove(mem, (char*)pa, PGSIZE);
-    if(mappages(d, (void*)i, PGSIZE, PADDR(mem), PTE_W|PTE_U) < 0)
+    if(mappages(d, (void*)i, PGSIZE, PADDR(mem), (PTE_W & (*pte & PTE_W)) | PTE_U) < 0)
       goto bad;
   }
   return d;
