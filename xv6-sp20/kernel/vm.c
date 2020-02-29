@@ -82,13 +82,13 @@ int mprotect(void *addr, int len)
 
     if(len <= 0) return -1;
     for(int i = 0; i < len; i++) {
-        pte = walkpgdir(proc->pgdir, a, 0)
+        pte = walkpgdir(proc->pgdir, a, 0);
         if(pte == 0) return -1;
         if(*pte & PTE_P) return -1;
         a += PGSIZE;
     }
     for(int i = 0; i < len; i++) {
-        pte = walkpgdir(proc->pgdir, a, 0)
+        pte = walkpgdir(proc->pgdir, a, 0);
         *pte = *pte & ~PTE_W;
         a += PGSIZE;
     }
