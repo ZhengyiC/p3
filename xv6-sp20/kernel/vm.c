@@ -143,6 +143,7 @@ int munprotect(void *addr, int len){
          *pte= *pte | PTE_W;
 
     }
+    lcr3(PADDR(proc->pgdir));
 
 
 
