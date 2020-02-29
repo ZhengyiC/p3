@@ -125,25 +125,33 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
 //This function set a region starting from addr with len length to both readable and writable
 //Return 0 upon success, else return -1
 int munprotect(void *addr, int len){
-    if(addr != PGROUNDDOWN(addr) || len<1 || addr> (void*)USERTOP || addr<0){
-        return -1; //not align
-    }
 
-    if((addr+ PGSIZE*len)> (void*)USERTOP){
+    char* a = PGROUNDDOWN(addr);
 
-        return -1; //go beyond bound
-    }
+    if( a!= addr || len<1 || (uint) addr> USERTOP ){return -1;}//not align
+    if( (uint)(addr+ PGSIZE*len)> USERTOP){return -1; }//go beyound bound
 
-    pde_t *curr_pgdir = proc->pgdir;
     pte_t *pte;
-    for(int i = 0; i< len ; i++){
-         pte = walkpgdir(curr_pgdir, addr + i*PGSIZE, 0);
-         if(pte == 0){
-             return -1; //not present
-         }
-         *pte = *pte | PTE_P | PTE_W | PTE_U;
-         lcr3(PADDR(proc->pgdir));
+    //going throught the range and check whether pte is present or not
+    for(int i = 0; i < len; i++) {
+        pte = walkpgdir(proc->pgdir, a, 0);
+        //cprintf("c, len = %d\n", len);
+        if(pte == 0) return -1;
+        if(!(*pte & PTE_P)) return -1;
+        //cprintf("before unprotect: %d\n", (uint)*pte);
+        a += PGSIZE;
     }
+    //start another interation to set protection bit to 0
+    a = PGROUNDDOWN(addr);
+    for(int i = 0; i< len ; i++){
+         pte = walkpgdir( proc->pgdir, a , 0);
+         *pte = *pte |PTE_W ;
+         //cprintf("after unprotect: %d\n", (uint)*pte);
+         lcr3(PADDR(proc->pgdir));//flush base register
+         a += PGSIZE;
+    }
+
+
     return 0;
 
 }
