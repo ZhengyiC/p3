@@ -109,7 +109,7 @@ int munprotect(void *addr, int len){
     if(pte == 0){
         return -1; //not present
     }
-    *pte= *pte | PTE_W; 
+    *pte= *pte | PTE_W;
 
 
 
