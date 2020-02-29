@@ -40,7 +40,7 @@ seginit(void)
 
   lgdt(c->gdt, sizeof(c->gdt));
   loadgs(SEG_KCPU << 3);
-  
+
   // Initialize cpu-local storage.
   cpu = c;
   proc = 0;
@@ -64,7 +64,7 @@ walkpgdir(pde_t *pgdir, const void *va, int create)
     // Make sure all those PTE_P bits are zero.
     memset(pgtab, 0, PGSIZE);
     // The permissions here are overly generous, but they can
-    // be further restricted by the permissions in the page table 
+    // be further restricted by the permissions in the page table
     // entries, if necessary.
     *pde = PADDR(pgtab) | PTE_P | PTE_W | PTE_U;
   }
@@ -79,7 +79,7 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
 {
   char *a, *last;
   pte_t *pte;
-  
+
   a = PGROUNDDOWN(la);
   last = PGROUNDDOWN(la + size - 1);
   for(;;){
@@ -97,6 +97,26 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
   return 0;
 }
 
+//This function set a region starting from addr with len length to both readable and writable
+//Return 0 upon success, else return -1
+int munprotect(void *addr, int len){
+    if(addr != PGROUNDUP(addr) || len<1 || addr> USERTOP || addr<0){
+        return -1; //not align
+    }
+
+    pde_t * curr_pgdir = proc->pgdir;
+    pte_t* pte = walkpgdir(curr_pgdir, addr, 0);
+    if(pte == 0){
+        return -1; //not present
+    }
+    *pte= *pte | PTE_W; 
+
+
+
+    return 0;
+
+}
+
 // The mappings from logical to linear are one to one (i.e.,
 // segmentation doesn't do anything).
 // There is one page table per process, plus one that's used
@@ -104,7 +124,7 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
 // A user process uses the same page table as the kernel; the
 // page protection bits prevent it from using anything other
 // than its memory.
-// 
+//
 // setupkvm() and exec() set up every page table like this:
 //   0..640K          : user memory (text, data, stack, heap)
 //   640K..1M         : mapped direct (for IO space)
@@ -190,7 +210,7 @@ void
 inituvm(pde_t *pgdir, char *init, uint sz)
 {
   char *mem;
-  
+
   if(sz >= PGSIZE)
     panic("inituvm: more than a page");
   mem = kalloc();
@@ -347,7 +367,7 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
 {
   char *buf, *pa0;
   uint n, va0;
-  
+
   buf = (char*)p;
   while(len > 0){
     va0 = (uint)PGROUNDDOWN(va);
