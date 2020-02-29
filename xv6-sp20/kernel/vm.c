@@ -120,11 +120,11 @@ mappages(pde_t *pgdir, void *la, uint size, uint pa, int perm)
 //This function set a region starting from addr with len length to both readable and writable
 //Return 0 upon success, else return -1
 int munprotect(void *addr, int len){
-    if(addr != PGROUNDUP(addr) || len<1 || addr> USERTOP || addr<0){
+    if(addr != (char*) PGROUNDUP(addr) || len<1 || addr<0){
         return -1; //not align
     }
 
-    if((addr+ PGSIZE*len)> USERTOP){
+    if((&addr+ PGSIZE*len)> USERTOP || &addr > USERTOP){
         return -1; //go beyond bound
     }
 
