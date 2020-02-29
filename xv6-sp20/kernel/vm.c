@@ -79,6 +79,7 @@ int mprotect(void *addr, int len)
     char *a;
     a = PGROUNDDOWN(addr);
     if(a != addr) return -1;
+
     if(len <= 0) return -1;
     for(int i = 0; i < len; i++) {
         pte = walkpgdir(proc->pgdir, a, 0)
