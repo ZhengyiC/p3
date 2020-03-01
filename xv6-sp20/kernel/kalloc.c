@@ -21,7 +21,7 @@ struct {
 typedef struct allolist{
     struct allolist* next;  //a ptr to the head of an allocated list
     int addr;
-}
+} allolist;
 int allo_sz; //size of the allocated list
 allolist* head;
 allolist* new;
@@ -99,7 +99,7 @@ kalloc(void)
 
   acquire(&kmem.lock);
   r = kmem.freelist;
-  if(r)
+  if(r){
     kmem.freelist = r->next;
     if(allo_sz != 0){
         new-> addr = (int) r;
@@ -109,6 +109,7 @@ kalloc(void)
         head-> addr = (int) r;
     }
     allo_sz ++;
+  }
   release(&kmem.lock);
 
   return (char*)r;
