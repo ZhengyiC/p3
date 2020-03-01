@@ -89,8 +89,6 @@ sys_uptime(void)
   return xticks;
 }
 
-
-
 int sys_munprotect(void){
     int len;
     void* addr;
@@ -106,5 +104,15 @@ int sys_mprotect(void)
   if(argptr(0, (void*)&addr, 1)< 0 || argint(1, &len) < 0)
     return -1;
   return mprotect(addr, len);
+
+}
+
+int sys_dump_allocated(void)
+{
+  int *frames;
+  int numframes;
+  if(argptr(0, (void*)&frames, sizeof(frames)) < 0 || argint(1, &numframes) < 0)
+    return -1;
+  return dump_allocated(frames, numframes);
 
 }
