@@ -23,8 +23,7 @@ int allolist[512];
 
 int allo_sz; //size of the allocated list
 
-int free_sz;
-
+int free_sz = 0;
 extern char end[]; // first address after kernel loaded from ELF file
 
 // Initialize free list of physical pages.
@@ -33,12 +32,11 @@ kinit(void)
 {
   char *p;
 
+
   initlock(&kmem.lock, "kmem");
   p = (char*)PGROUNDUP((uint)end);
-  free_sz = 0;
   for(; p + PGSIZE <= (char*)PHYSTOP; p += PGSIZE){
     kfree(p);
-    free_sz++;
   }
 
   memset(allolist, 0, sizeof allolist);
@@ -59,13 +57,11 @@ kfree(char *v)
 
   // Fill with junk to catch dangling refs.
   memset(v, 1, PGSIZE);
-
   acquire(&kmem.lock);
   r = (struct run*)v;
   r->next = kmem.freelist;
   kmem.freelist = r;
   free_sz++;
-
   //remove r from allocated list
   int which;
   for(int i = 0; i < allo_sz; i++) {
@@ -90,20 +86,23 @@ kalloc(void)
   struct run *r;
 
   acquire(&kmem.lock);
-  // r = kmem.freelist;
-  int rand = ((unsigned int)xv6_rand()) % free_sz;
+  r = kmem.freelist;
+  unsigned int rand = ((unsigned int)xv6_rand()) % free_sz;
   struct run* now = kmem.freelist;
   struct run* last = NULL;
+  // cprintf("free_sz: %d\n", free_sz);
+  // cprintf("rand: %d\n", rand);
+
   for(int i = 0; i < rand; i++){
     last = now;
+    // if(now==NULL){
+    //   cprintf("you screwed up\n");
+    //   break;
+    // }
     now = now->next;
   }
 
   r = now;
-  if(!r) {
-    release(&kmem.lock); 
-    return (char*)r;
-  }
 
   if(last) {
     last->next = now->next;
@@ -117,7 +116,9 @@ kalloc(void)
     }
     allolist[0] = (int)r;
     allo_sz++;
+    free_sz--;
   }
+
   release(&kmem.lock);
 
   return (char*)r;
