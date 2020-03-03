@@ -100,6 +100,11 @@ kalloc(void)
   }
 
   r = now;
+  if(!r) {
+    release(&kmem.lock); 
+    return (char*)r;
+  }
+
   if(last) {
     last->next = now->next;
   } else {

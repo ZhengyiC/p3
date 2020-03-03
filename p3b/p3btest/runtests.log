@@ -1,0 +1,179 @@
+starting build
+
+**********************************************************************
+
+Test build
+build xv6 using make
+
+**********************************************************************
+Trying to clean project using make clean
+make clean
+rm -f runtests
+rm -f *.pyc
+Trying to build project using make
+make
+echo "#!/bin/bash" > runtests
+echo "base=~cs537-1/ta/tests/3b" >> runtests
+echo "python \$base/project3_test.py --test-path \$base \$@ |"\
+	"tee -i runtests.log" >> runtests
+echo "exit \$?" >> runtests
+chmod a+x runtests
+
+
+test build FAILED
+ (build xv6 using make)
+ required file 'xv6.img' does not exist after make
+ required file 'fs.img' does not exist after make
+
+starting statistical test
+
+**********************************************************************
+
+Test statistical test
+compile and test the uniformity and randomness of the random number generator
+
+**********************************************************************
+gcc -Wl,-wrap,rand /u/k/a/kaiweitu/Documents/537/3/p3/ctests/rand_tester.c kernel/rand.c -I./include -I./user -o rand_tester -Wall -Werror
+gcc: error: kernel/rand.c: No such file or directory
+Failure: statistical test returned incorrect status code. Expected 0 got 1
+
+
+test statistical test FAILED (0 of 5)
+ (compile and test the uniformity and randomness of the random number generator)
+ statistical test returned incorrect status code. Expected 0 got 1
+
+starting srand behavior test
+
+**********************************************************************
+
+Test srand behavior test
+test the behavior of srand according to the definition in the header file
+
+**********************************************************************
+gcc -Wl,-wrap,rand /u/k/a/kaiweitu/Documents/537/3/p3/ctests/srand_tester.c kernel/rand.c -I./include -I./user -o srand_tester -Wall -Werror
+gcc: error: kernel/rand.c: No such file or directory
+Failure: srand behavior test returned incorrect status code. Expected 0 got 1
+
+
+test srand behavior test FAILED (0 of 2)
+ (test the behavior of srand according to the definition in the header file)
+ srand behavior test returned incorrect status code. Expected 0 got 1
+
+starting mprotect_basic
+
+**********************************************************************
+
+Test mprotect_basic
+check whether mprotect work properly
+
+**********************************************************************
+Running xv6 user progam /u/k/a/kaiweitu/Documents/537/3/p3/ctests/mprotect_basic.c
+IOError: [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+
+test mprotect_basic FAILED (0 of 5)
+ (check whether mprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+starting munprotect_basic
+
+**********************************************************************
+
+Test munprotect_basic
+check whether munprotect work properly
+
+**********************************************************************
+Running xv6 user progam /u/k/a/kaiweitu/Documents/537/3/p3/ctests/munprotect_basic.c
+IOError: [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+
+test munprotect_basic FAILED (0 of 5)
+ (check whether munprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+starting test_protect
+
+**********************************************************************
+
+Test test_protect
+check whether mprotect and munprotect work properly
+
+**********************************************************************
+Running xv6 user progam /u/k/a/kaiweitu/Documents/537/3/p3/ctests/test_protect.c
+IOError: [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+
+test test_protect FAILED (0 of 5)
+ (check whether mprotect and munprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+starting protect_error
+
+**********************************************************************
+
+Test protect_error
+check the error handling of mprotect and munprotect
+
+**********************************************************************
+Running xv6 user progam /u/k/a/kaiweitu/Documents/537/3/p3/ctests/protect_error.c
+IOError: [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+
+test protect_error FAILED (0 of 5)
+ (check the error handling of mprotect and munprotect)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+starting allocator_a
+
+**********************************************************************
+
+Test allocator_a
+test the alternate allocator in part 2
+
+**********************************************************************
+Running xv6 user progam /u/k/a/kaiweitu/Documents/537/3/p3/ctests/allocator_a.c
+IOError: [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+
+test allocator_a FAILED (0 of 5)
+ (test the alternate allocator in part 2)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+**********************************************************************
+Summary:
+test build FAILED
+ (build xv6 using make)
+ required file 'xv6.img' does not exist after make
+ required file 'fs.img' does not exist after make
+
+test statistical test FAILED (0 of 5)
+ (compile and test the uniformity and randomness of the random number generator)
+ statistical test returned incorrect status code. Expected 0 got 1
+
+test srand behavior test FAILED (0 of 2)
+ (test the behavior of srand according to the definition in the header file)
+ srand behavior test returned incorrect status code. Expected 0 got 1
+
+test mprotect_basic FAILED (0 of 5)
+ (check whether mprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+test munprotect_basic FAILED (0 of 5)
+ (check whether munprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+test test_protect FAILED (0 of 5)
+ (check whether mprotect and munprotect work properly)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+test protect_error FAILED (0 of 5)
+ (check the error handling of mprotect and munprotect)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+test allocator_a FAILED (0 of 5)
+ (test the alternate allocator in part 2)
+ Unexpected exception [Errno 2] No such file or directory: '/tmp/tmpB_CRjh/p/user/tester.c'
+
+Passed 0 of 8 tests.
+Overall 0 of 8
+Points 0 of 32

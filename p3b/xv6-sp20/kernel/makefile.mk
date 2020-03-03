@@ -16,6 +16,7 @@ KERNEL_OBJECTS := \
 	picirq.o\
 	pipe.o\
 	proc.o\
+	rand.o\
 	spinlock.o\
 	string.o\
 	swtch.o\

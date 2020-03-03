@@ -11,7 +11,7 @@ int xv6_rand (void)
   x ^= x << 13;
   x ^= x >> 17;
   x ^= x << 5;
-  return state.a = x % (XV6_RAND_MAX+1);
+  return state.a = x % ((unsigned int)XV6_RAND_MAX+1);
 }
 
 
