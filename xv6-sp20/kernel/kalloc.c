@@ -33,14 +33,14 @@ void
 kinit(void)
 {
   char *p;
+  allolist  new_head = {NULL, 0};
 
   initlock(&kmem.lock, "kmem");
   p = (char*)PGROUNDUP((uint)end);
   for(; p + PGSIZE <= (char*)PHYSTOP; p += PGSIZE){
     kfree(p);}
 
-  head->addr  = NULL;
-  head-> next = NULL;
+  head = &new_head;
   allo_sz = 0 ;
 
 
