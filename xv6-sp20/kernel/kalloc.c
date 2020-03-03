@@ -29,7 +29,7 @@ void
 kinit(void)
 {
   char *p;
-  
+
 
   initlock(&kmem.lock, "kmem");
   p = (char*)PGROUNDUP((uint)end);
@@ -87,6 +87,7 @@ kalloc(void)
   acquire(&kmem.lock);
   r = kmem.freelist;
   if(r){
+      if(r->next == NULL){return 0; }
     kmem.freelist = r->next->next;
     for(int i = allo_sz-1; i >= 0; i--){
       allolist[i+1] = allolist[i];
