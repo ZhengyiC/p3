@@ -411,15 +411,15 @@ ld  -m    elf_i386 -nostdlib --omagic \
 dd if=/dev/zero of=xv6.img count=10000
 10000+0 records in
 10000+0 records out
-5120000 bytes (5.1 MB, 4.9 MiB) copied, 0.0227179 s, 225 MB/s
+5120000 bytes (5.1 MB, 4.9 MiB) copied, 0.0195629 s, 262 MB/s
 dd if=kernel/bootblock of=xv6.img conv=notrunc
 1+0 records in
 1+0 records out
-512 bytes copied, 8.5458e-05 s, 6.0 MB/s
+512 bytes copied, 6.0116e-05 s, 8.5 MB/s
 dd if=kernel/kernel of=xv6.img seek=1 conv=notrunc
-256+1 records in
-256+1 records out
-131548 bytes (132 kB, 128 KiB) copied, 0.00048759 s, 270 MB/s
+266+1 records in
+266+1 records out
+136340 bytes (136 kB, 133 KiB) copied, 0.000548096 s, 249 MB/s
 gcc -c  -iquote include -Wall -Werror -ggdb  -o tools/mkfs.o tools/mkfs.c
 gcc  tools/mkfs.o -o tools/mkfs
 mkdir -p fs
@@ -488,26 +488,26 @@ ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --o
 cp user/bin/tp fs/tp
 ./tools/mkfs fs.img fs
 used 29 (bit 1 ninode 26) free 29 total 1024
-kill
+ls
+tp
+wc
+README
+zombie
+usertests
+forktest
+echo
+prot_b
+cat
+mkdir
+rm
 unprot-b
 tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
 stressfs
+kill
+sh
+init
+grep
+ln
 balloc: first 471 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/ls user/bin/stressfs user/bin/grep user/bin/sh user/bin/tester user/bin/unprot-b user/bin/kill user/bin/cat user/bin/mkdir user/bin/init user/bin/rm user/bin/echo user/bin/ln user/bin/usertests user/bin/wc user/bin/prot_b user/bin/tp user/bin/zombie
@@ -534,26 +534,26 @@ ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --o
 cp user/bin/tester fs/tester
 ./tools/mkfs fs.img fs
 used 29 (bit 1 ninode 26) free 29 total 1024
-kill
+ls
+tp
+wc
+README
+zombie
+usertests
+forktest
+echo
+prot_b
+cat
+mkdir
+rm
 unprot-b
 tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
 stressfs
+kill
+sh
+init
+grep
+ln
 balloc: first 473 blocks have been allocated
 balloc: write bitmap block at sector 28
 rm user/bin/tester
@@ -568,300 +568,13 @@ WARNING: Image format was not specified for 'xv6.img' and probing guessed raw.
          Specify the 'raw' format explicitly to remove the restrictions.
 xv6...
 cpu0: starting
-init: starting sh
-$ tester
-tester
-write to a protected page
-pid 4 tester: trap 14 err 7 on cpu 0 eip 0xb9 addr 0x2000--kill proc
-write to an unprotected page
-TEST PASSED
+unexpected trap 14 from cpu 0 eip 102bde (cr2=0x4)
+cpu0: panic: trap
+ 106240 105eea 103da9 103e36 10322e 1031a5 0 0 0 0
 
-
-test mprotect_basic PASSED (5 of 5)
+test mprotect_basic FAILED (0 of 5)
  (check whether mprotect work properly)
+ Timelimit (30.0s) exceeded
 
-starting mprotect_fork
-
-**********************************************************************
-
-Test mprotect_fork
-check whether fork inherit the write bit from parent
-
-**********************************************************************
-Running xv6 user progam /u/c/s/cs537-1/tests/p3a/ctests/mprotect_fork.c
-Trying to build project using make
-make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-	-M -MG user/tester.c -MF user/tester.d -MT user/tester.d -MT user/tester.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o user/tester.o user/tester.c
-ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --output=user/bin/tester user/tester.o user/ulib.o user/usys.o user/printf.o user/umalloc.o
-cp user/bin/tester fs/tester
-./tools/mkfs fs.img fs
-used 29 (bit 1 ninode 26) free 29 total 1024
-kill
-unprot-b
-tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
-stressfs
-balloc: first 472 blocks have been allocated
-balloc: write bitmap block at sector 28
-rm user/bin/tester
-make qemu-nox CPUS=1
-Ctrl+a h for help
-/p/course/cs537-remzi/ta/tools/qemu -nographic -hdb fs.img xv6.img -smp 1
-WARNING: Image format was not specified for 'fs.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-WARNING: Image format was not specified for 'xv6.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-xv6...
-cpu0: starting
-init: starting sh
-$ tester
-tester
-write to protected page in the child
-pid 4 tester: trap 14 err 7 on cpu 0 eip 0xb9 addr 0x2000--kill proc
-TEST PASSED
-
-
-test mprotect_fork PASSED (5 of 5)
- (check whether fork inherit the write bit from parent)
-
-starting munprotect_basic
-
-**********************************************************************
-
-Test munprotect_basic
-check whether munprotect work properly
-
-**********************************************************************
-Running xv6 user progam /u/c/s/cs537-1/tests/p3a/ctests/munprotect_basic.c
-Trying to build project using make
-make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-	-M -MG user/tester.c -MF user/tester.d -MT user/tester.d -MT user/tester.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o user/tester.o user/tester.c
-ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --output=user/bin/tester user/tester.o user/ulib.o user/usys.o user/printf.o user/umalloc.o
-cp user/bin/tester fs/tester
-./tools/mkfs fs.img fs
-used 29 (bit 1 ninode 26) free 29 total 1024
-kill
-unprot-b
-tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
-stressfs
-balloc: first 473 blocks have been allocated
-balloc: write bitmap block at sector 28
-rm user/bin/tester
-make qemu-nox CPUS=1
-Ctrl+a h for help
-/p/course/cs537-remzi/ta/tools/qemu -nographic -hdb fs.img xv6.img -smp 1
-WARNING: Image format was not specified for 'fs.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-WARNING: Image format was not specified for 'xv6.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-xv6...
-cpu0: starting
-init: starting sh
-$ tester
-tester
-write to protected page
-pid 4 tester: trap 14 err 7 on cpu 0 eip 0xaa addr 0x2000--kill proc
-write to an unprotected page
-TEST PASSED
-
-
-test munprotect_basic PASSED (5 of 5)
- (check whether munprotect work properly)
-
-starting test_protect
-
-**********************************************************************
-
-Test test_protect
-check whether mprotect and munprotect work properly
-
-**********************************************************************
-Running xv6 user progam /u/c/s/cs537-1/tests/p3a/ctests/test_protect.c
-Trying to build project using make
-make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-	-M -MG user/tester.c -MF user/tester.d -MT user/tester.d -MT user/tester.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o user/tester.o user/tester.c
-ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --output=user/bin/tester user/tester.o user/ulib.o user/usys.o user/printf.o user/umalloc.o
-cp user/bin/tester fs/tester
-./tools/mkfs fs.img fs
-used 29 (bit 1 ninode 26) free 29 total 1024
-kill
-unprot-b
-tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
-stressfs
-balloc: first 474 blocks have been allocated
-balloc: write bitmap block at sector 28
-rm user/bin/tester
-make qemu-nox CPUS=1
-Ctrl+a h for help
-/p/course/cs537-remzi/ta/tools/qemu -nographic -hdb fs.img xv6.img -smp 1
-WARNING: Image format was not specified for 'fs.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-WARNING: Image format was not specified for 'xv6.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-xv6...
-cpu0: starting
-init: starting sh
-$ tester
-tester
-write to a protected page
-pid 4 tester: trap 14 err 7 on cpu 0 eip 0x95 addr 0x4fff--kill proc
-write to a protected page
-pid 5 tester: trap 14 err 7 on cpu 0 eip 0x139 addr 0x3000--kill proc
-write to a protected page
-pid 6 tester: trap 14 err 7 on cpu 0 eip 0x1ec addr 0x2000--kill proc
-write to an unprotected page
-TEST PASSED
-
-
-test test_protect PASSED (8 of 8)
- (check whether mprotect and munprotect work properly)
-
-starting protect_error
-
-**********************************************************************
-
-Test protect_error
-check the error handling of mprotect and munprotect
-
-**********************************************************************
-Running xv6 user progam /u/c/s/cs537-1/tests/p3a/ctests/protect_error.c
-Trying to build project using make
-make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-	-M -MG user/tester.c -MF user/tester.d -MT user/tester.d -MT user/tester.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o user/tester.o user/tester.c
-ld  -m    elf_i386 -nostdlib --omagic --entry=main --section-start=.text=0x0 --output=user/bin/tester user/tester.o user/ulib.o user/usys.o user/printf.o user/umalloc.o
-cp user/bin/tester fs/tester
-./tools/mkfs fs.img fs
-used 29 (bit 1 ninode 26) free 29 total 1024
-kill
-unprot-b
-tester
-prot_b
-init
-ls
-usertests
-cat
-forktest
-rm
-tp
-echo
-grep
-wc
-ln
-mkdir
-README
-sh
-zombie
-stressfs
-balloc: first 472 blocks have been allocated
-balloc: write bitmap block at sector 28
-rm user/bin/tester
-make qemu-nox CPUS=1
-Ctrl+a h for help
-/p/course/cs537-remzi/ta/tools/qemu -nographic -hdb fs.img xv6.img -smp 1
-WARNING: Image format was not specified for 'fs.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-WARNING: Image format was not specified for 'xv6.img' and probing guessed raw.
-         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
-         Specify the 'raw' format explicitly to remove the restrictions.
-xv6...
-cpu0: starting
-init: starting sh
-$ tester
-tester
-TEST PASSED
-
-
-test protect_error PASSED (5 of 5)
- (check the error handling of mprotect and munprotect)
-
-starting allocator_a
-
-**********************************************************************
-
-Test allocator_a
-test the alternate allocator in part 2
-
-**********************************************************************
-Running xv6 user progam /u/c/s/cs537-1/tests/p3a/ctests/allocator_a.c
-Trying to build project using make
-make
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 \
-	-M -MG user/tester.c -MF user/tester.d -MT user/tester.d -MT user/tester.o
-gcc  -I include -nostdinc -Wall -Werror -ggdb -fno-pic -fno-builtin -fno-strict-aliasing -fno-stack-protector -m32 -c -o user/tester.o user/tester.c
-user/tester.c: In function ‘main’:
-user/tester.c:13:9: error: implicit declaration of function ‘dump_allocated’ [-Werror=implicit-function-declaration]
-     if (dump_allocated(frames, numframes) != 0) {
-         ^~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-user/makefile.mk:95: recipe for target 'user/tester.o' failed
-make: *** [user/tester.o] Error 1
-
-
-test allocator_a FAILED (0 of 5)
- (test the alternate allocator in part 2)
- make failed (error 2)
-
-Skipped 0 tests.
+Skipped 5 tests.
 To keep testing after failing a test, use flag '-c' or '--continue'
