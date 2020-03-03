@@ -29,7 +29,7 @@ void
 kinit(void)
 {
   char *p;
-  allolist  new_head = {NULL, 0};
+  
 
   initlock(&kmem.lock, "kmem");
   p = (char*)PGROUNDUP((uint)end);
