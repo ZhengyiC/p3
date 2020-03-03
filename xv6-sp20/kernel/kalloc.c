@@ -18,13 +18,9 @@ struct {
 } kmem;
 
 
-typedef struct allolist{
-    struct allolist* next;  //a ptr to the head of an allocated list
-    int addr;
-} allolist;
+int allolist[512];
+
 int allo_sz; //size of the allocated list
-allolist* head;
-allolist* new;
 
 extern char end[]; // first address after kernel loaded from ELF file
 
@@ -40,10 +36,9 @@ kinit(void)
   for(; p + PGSIZE <= (char*)PHYSTOP; p += PGSIZE){
     kfree(p);}
 
-  head = &new_head;
+
+  memset(allolist, 0, sizeof allolist);
   allo_sz = 0 ;
-
-
 }
 
 // Free the page of physical memory pointed at by v,
@@ -54,7 +49,6 @@ void
 kfree(char *v)
 {
   struct run *r;
-  allolist * head_st = head;//head store
 
   if((uint)v % PGSIZE || v < end || (uint)v >= PHYSTOP)
     panic("kfree");
@@ -66,26 +60,20 @@ kfree(char *v)
   r = (struct run*)v;
   r->next = kmem.freelist;
   kmem.freelist = r;
+
   //remove r from allocated list
-  if(head->addr == (int)r){
-      head = head ->next;
-      allo_sz --;
-      goto release;
+  int which;
+  for(int i = 0; i < allo_sz; i++) {
+    if(allolist[i] == (int) r){
+      which = i;
+      break;
+    }
   }
-
-  while(head -> next != NULL){
-      if(head -> next->addr == (int)r){
-          head -> next = head -> next -> next;
-          allo_sz --;
-          goto restore;
-      }
-      head = head -> next;
-
+  for(int i = which; i < allo_sz; i++){
+    allolist[i] = allolist[i+1];
   }
-  restore:
-    head = head_st;
-  release:
-    release(&kmem.lock);
+  allo_sz--;
+  release(&kmem.lock);
 }
 
 // Allocate one 4096-byte page of physical memory.
@@ -96,19 +84,15 @@ kalloc(void)
 {
   struct run *r;
 
-
   acquire(&kmem.lock);
   r = kmem.freelist;
   if(r){
-    kmem.freelist = r->next;
-    if(allo_sz != 0){
-        new-> addr = (int) r;
-        head -> next = head;
-        head = new;
-    }else{
-        head-> addr = (int) r;
+    kmem.freelist = r->next->next;
+    for(int i = allo_sz-1; i >= 0; i--){
+      allolist[i+1] = allolist[i];
     }
-    allo_sz ++;
+    allolist[0] = (int)r;
+    allo_sz++;
   }
   release(&kmem.lock);
 
@@ -121,12 +105,9 @@ kalloc(void)
 int dump_allocated(int *frames, int numframes) {
     if( numframes > allo_sz) return -1;
 
-    allolist * curr = head;
-    for( int i=0; i< numframes; i++){
-        *(frames+i) = curr->addr;
-        curr= curr -> next;
+    for(int i = 0; i < numframes; i++){
+        *(frames+i) = allolist[i];
     }
-
 
     return 0 ;
 }
