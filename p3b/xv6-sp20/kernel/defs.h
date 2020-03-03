@@ -172,6 +172,10 @@ int             copyout(pde_t*, uint, void*, uint);
 int             mprotect(void* addr, int len);
 int             munprotect(void* addr, int len);
 
+// rand.c
+int             xv6_rand (void);
+void            xv6_srand (unsigned int seed);
+
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
 
